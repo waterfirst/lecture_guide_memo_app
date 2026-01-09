@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture PDF Study App</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/notes.css">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>📚 Lecture PDF Study</h1>
+            <div class="controls">
+                <input type="file" id="pdf-upload" accept=".pdf" hidden>
+                <button id="upload-btn" class="btn primary">파일 업로드</button>
+                <div class="viewer-controls">
+                    <button id="add-note-btn" class="btn secondary">메모 추가</button>
+                    <button id="prev-page" class="btn">이전</button>
+                    <span id="page-info">페이지: <span id="page-num">0</span> / <span id="page-count">0</span></span>
+                    <button id="next-page" class="btn">다음</button>
+                    <div class="zoom-controls">
+                        <button id="zoom-out" class="btn">-</button>
+                        <span id="zoom-val">100%</span>
+                        <button id="zoom-in" class="btn">+</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- PDF Viewer Area -->
+            <div id="pdf-viewer-container" class="viewer-area">
+                <canvas id="pdf-canvas"></canvas>
+                <div id="notes-overlay" class="notes-overlay"></div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="script">한글 스크립트</button>
+                    <button class="tab-btn" data-tab="notes">메모 목록</button>
+                    <button class="tab-btn" data-tab="links">참고 자료</button>
+                </div>
+                <div class="tab-content">
+                    <div id="script-tab" class="tab-pane active">
+                        <div class="script-header">
+                            <button id="generate-script" class="btn secondary">AI 스크립트 생성</button>
+                        </div>
+                        <div id="script-body" class="scrollable">
+                            <p class="placeholder">PDF를 업로드하고 스크립트를 생성하세요.</p>
+                        </div>
+                    </div>
+                    <div id="notes-tab" class="tab-pane">
+                        <div id="notes-list" class="scrollable">
+                            <p class="placeholder">생성된 메모가 없습니다.</p>
+                        </div>
+                    </div>
+                    <div id="links-tab" class="tab-pane">
+                        <div class="links-header">
+                            <button id="add-link-btn" class="btn">링크 추가</button>
+                        </div>
+                        <div id="links-list" class="scrollable">
+                            <p class="placeholder">첨부된 링크가 없습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/pdf-viewer.js"></script>
+    <script src="js/translator.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/links.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

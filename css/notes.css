@@ -1,0 +1,61 @@
+/* Notes Overlay */
+.notes-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to canvas when not on a note */
+}
+
+.sticky-note {
+    position: absolute;
+    width: 200px;
+    min-height: 150px;
+    background: var(--note-yellow);
+    box-shadow: var(--shadow);
+    padding: 10px;
+    border-radius: 4px;
+    pointer-events: auto;
+    /* Catch clicks */
+    display: flex;
+    flex-direction: column;
+}
+
+.note-header {
+    height: 20px;
+    background: rgba(0, 0, 0, 0.05);
+    margin: -10px -10px 10px -10px;
+    border-radius: 4px 4px 0 0;
+    cursor: move;
+}
+
+.note-content {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: none;
+    outline: none;
+}
+
+.note-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.delete-note {
+    background: none;
+    border: none;
+    color: #cc0000;
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.delete-note:hover {
+    opacity: 1;
+}

@@ -1,0 +1,240 @@
+:root {
+    --primary-color: #4A90E2;
+    --primary-hover: #357ABD;
+    --secondary-color: #F5A623;
+    --bg-color: #F8F9FA;
+    --sidebar-bg: #FFFFFF;
+    --text-color: #333333;
+    --border-color: #E1E4E8;
+    --note-yellow: #FFF9C4;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --header-height: 70px;
+    --sidebar-width: 350px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+.app-header {
+    height: var(--header-height);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.app-header h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.viewer-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f0f2f5;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-left: 1px solid var(--border-color);
+    padding-left: 1rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: #f0f2f5;
+}
+
+.btn.primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn.primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn.secondary {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+}
+
+/* Main Content */
+.app-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.viewer-area {
+    flex: 1;
+    background: #525659;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Ensure top alignment for scrolling */
+    padding: 40px;
+    position: relative;
+}
+
+#pdf-viewer-container {
+    position: relative;
+    display: inline-block;
+    /* Match child canvas size */
+}
+
+#pdf-canvas {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    background: white;
+    display: block;
+}
+
+/* Notes Overlay - now strictly matches canvas size */
+.notes-overlay {
+    position: absolute;
+    top: 40px;
+    /* Match padding-top of .viewer-area */
+    left: 50%;
+    transform: translateX(-50%);
+    /* Center like canvas */
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+}
+
+.tab-pane.active {
+    display: flex;
+}
+
+.scrollable {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.placeholder {
+    color: #999;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 300px;
+    }
+}
+
+/* Sidebar Items */
+.note-list-item {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.note-list-item:hover {
+    background: #f0f2f5;
+}
+
+.note-page {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    display: block;
+}
+
+.note-snippet {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

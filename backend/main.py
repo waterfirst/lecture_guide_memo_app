@@ -1,0 +1,95 @@
+import os
+import io
+import base64
+import traceback
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import google.generativeai as genai
+import pdfplumber
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = FastAPI()
+
+# Enable CORS for local development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configure Gemini
+api_key = os.getenv("GOOGLE_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
+else:
+    print("Warning: GOOGLE_API_KEY not found in environment variables.")
+
+import ollama
+
+@app.post("/translate-pdf")
+async def translate_pdf_fallback():
+    # This is a fallback for cached frontends.
+    # Tell the user to refresh their browser.
+    raise HTTPException(status_code=400, detail="Outdated client version. Please refresh your browser (Ctrl+F5).")
+
+@app.post("/translate-page")
+async def translate_page(data: dict):
+    text = data.get("text", "")
+    image_data = data.get("image") # Base64 encoded image
+    
+    if not text and not image_data:
+        raise HTTPException(status_code=400, detail="No text or image provided")
+    
+    print(f"Received translation request. Text length: {len(text)}, Image present: {bool(image_data)}")
+    
+    try:
+        # If we have an image and Gemini is configured, use Gemini
+        if image_data and api_key:
+            print("Using Gemini for multimodal translation")
+            # Remove header if present (e.g., "data:image/png;base64,")
+            if "," in image_data:
+                image_data = image_data.split(",")[1]
+            
+            # Decode base64 to bytes
+            image_bytes = base64.b64decode(image_data)
+            
+            # Using gemini-3-flash-preview as requested (Gemini 3.0 Flash)
+            model = genai.GenerativeModel('gemini-3-flash-preview')
+            
+            prompt = "다음 슬라이드 이미지를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 서술은 제외하고 가독성 좋게 불렛 포인트 마크다운 형식으로 작성해줘."
+            if text:
+                prompt += f"\n\n참고 텍스트: {text}"
+            
+            response = model.generate_content([
+                prompt,
+                {"mime_type": "image/png", "data": image_bytes}
+            ])
+            
+            return {"script": response.text}
+
+        # Fallback to Ollama for text-only processing
+        if text:
+            model_name = "gemma3:4b" 
+            print(f"Calling Ollama with model: {model_name}")
+            
+            prompt = f"다음 영어 강의 텍스트를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 내용은 빼고 가독성 좋은 마크다운 불렛 포인트로 작성해줘:\n\n{text}"
+            
+            response = ollama.generate(model=model_name, prompt=prompt)
+            print("Ollama response received successfully")
+            
+            return {"script": response['response']}
+        
+        raise HTTPException(status_code=400, detail="Gemini API key not configured and no extractable text found.")
+    
+    except Exception as e:
+        print(f"Exception occurred during translation: {str(e)}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
