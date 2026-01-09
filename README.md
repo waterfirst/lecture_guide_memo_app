@@ -9,67 +9,86 @@
 ### 🎯 Purpose
 The **Lecture PDF Study App (Guider)** is designed to enhance the learning experience for students studying English-language lecture materials. It bridges the language barrier by providing AI-powered Korean explanations and summaries for English PDF slides, while allowing users to take interactive notes and manage reference links directly on the study material.
 
+### 🔑 Gemini API Key Setup & Security
+
+#### 1. How to get a Gemini API Key
+1.  Visit [Google AI Studio](https://aistudio.google.com/).
+2.  Sign in with your Google account.
+3.  Click on **"Get API key"** in the sidebar.
+4.  Create a new API key in a new or existing project.
+5.  Copy your API key.
+
+#### 2. How to Configure
+In the `backend/` directory, create a file named `.env` and add your key:
+```env
+GOOGLE_API_KEY=your_actual_api_key_here
+```
+
+#### ⚠️ Security Warning (CRITICAL)
+> [!CAUTION]
+> **NEVER upload your `.env` file or your API key directly to GitHub or any public repository.**
+> - Doing so will expose your key, allowing others to use your quota and potentially incur costs.
+> - Ensure `.env` is listed in your `.gitignore` file.
+
+---
+
 ### ✨ Key Features
 - **Smart PDF Viewer**: Optimized rendering with a default 70% zoom for comfortable reading.
-- **Multimodal AI Scripting**: Uses **Gemini 3.0 Flash** to analyze scanned or image-heavy slides and **Ollama (Gemma 3)** for fast local text analysis.
-- **Concise Summaries**: AI generates brief, bulleted Korean summaries to help you grasp core concepts quickly.
-- **Interactive Memos**: Create, drag, and save memos anywhere on the PDF pages.
-- **Reference Management**: Store and access helpful web links related to your lecture.
-- **Privacy Focused**: All your notes and AI scripts are saved locally in your browser.
-
-### 🚀 How to Use
-
-#### 1. Quick Start (Frontend)
-- Open `index.html` using a local web server (e.g., VS Code Live Server).
-- Upload your English lecture PDF.
-
-#### 2. AI Feature Setup (Backend)
-To enable AI summaries, you need to run the Python backend:
-1.  **Environment**: Activate your virtual environment in the `backend/` folder.
-2.  **Requirements**: Install dependencies: `pip install -r requirements.txt`.
-3.  **API Key**: Add your `GOOGLE_API_KEY` to `backend/.env` for Gemini image analysis.
-4.  **Launch**: Run `python main.py`. The backend runs on `http://localhost:8000`.
-
-#### 3. Local AI (Optional)
-- Install [Ollama](https://ollama.com/) and run `ollama pull gemma3:4b` for private, local text processing.
+- **Multimodal AI Scripting**: Uses **Gemini 3.0 Flash** to analyze scanned or image-heavy slides.
+- **Concise Summaries**: AI generates brief, bulleted Korean summaries.
+- **Interactive Memos & Links**: Manage notes and references directly on PDF pages.
+- **Privacy Focused**: All data is saved locally in your browser's LocalStorage.
 
 ---
 
 ## 한국어
 
 ### 🎯 목적
-**강의 PDF 학습 가이더 (Guider)**는 영어로 된 강의 자료를 학습하는 사용자들을 위한 스마트 학습 도구입니다. 영어 슬라이드의 내용을 AI가 한글로 친절하게 설명하고 요약해줌으로써 언어 장벽을 낮추고, 가독성 높은 인터페이스를 통해 효율적인 학습과 메모 관리를 돕습니다.
+**강의 PDF 학습 가이더 (Guider)**는 영어 강의 자료 학습을 돕는 스마트 도구입니다. AI를 활용해 영어 슬라이드를 한글로 요약/설명하고, 인터랙티브 메모와 링크 관리 기능을 통해 학습 효율을 높여줍니다.
 
-### ✨ 주요 기능
-- **스마트 PDF 뷰어**: 70% 최적 줌 비율로 쾌적한 가시성 제공.
-- **멀티모달 AI 분석**: **Gemini 3.0 Flash**를 통해 이미지가 많은 슬라이드나 스캔된 PDF도 분석하며, **Ollama (Gemma 3)**로 빠른 텍스트 분석 지원.
-- **간결한 요약**: 핵심 내용만 불렛 포인트로 정리하여 학습 효율 극대화.
-- **인터랙티브 메모**: 슬라이드 어디든 자유롭게 메모를 작성하고 드래그하여 배치.
-- **참고 링크 관리**: 학습 중 필요한 웹 링크를 저장하고 바로 확인.
-- **개인정보 보호**: 모든 메모와 AI 스크립트는 브라우저 로컬 저장소에만 안전하게 보관됩니다.
+### 🔑 Gemini API 키 발급 및 설정 방법
 
-### 🚀 사용 방법
+#### 1. API 키 발급 받기
+1.  [Google AI Studio](https://aistudio.google.com/)에 접속합니다.
+2.  구글 계정으로 로그인합니다.
+3.  사이드바에서 **"Get API key"**를 클릭합니다.
+4.  새 프로젝트 또는 기존 프로젝트에서 API 키를 생성합니다.
+5.  생성된 API 키를 복사합니다.
 
-#### 1. 빠른 시작 (프론트엔드)
-- `index.html` 파일을 로컬 서버(예: VS Code Live Server)로 엽니다.
-- 학습할 영어 PDF 파일을 업로드합니다.
+#### 2. 설정 방법
+`backend/` 디렉토리에 `.env` 파일을 생성하고 다음과 같이 키를 입력합니다:
+```env
+GOOGLE_API_KEY=발급받은_API_키_입력
+```
 
-#### 2. AI 기능 설정 (백엔드)
-AI 스크립트 생성을 위해서는 백엔드 서버 실행이 필요합니다:
-1.  **환경**: `backend/` 폴더에서 가상환경을 활성화합니다.
-2.  **패키지 설치**: `pip install -r requirements.txt`를 실행합니다.
-3.  **API 키**: `backend/.env` 파일에 `GOOGLE_API_KEY`를 입력합니다 (Gemini 이미지 인식용).
-4.  **서버 실행**: `python main.py`를 실행합니다. 서버는 `http://localhost:8000`에서 동작합니다.
-
-#### 3. 로컬 AI 사용 (선택 사항)
-- [Ollama](https://ollama.com/)를 설치하고 `ollama pull gemma3:4b` 명령어로 로컬 모델을 준비하세요.
+#### ⚠️ 보안 경고 (필독)
+> [!CAUTION]
+> **절대로 `.env` 파일이나 API 키를 GitHub 등 공개 저장소에 직접 업로드하지 마세요.**
+> - 키가 노출되면 타인이 사용자의 할당량을 소모하거나 비용을 발생시킬 수 있습니다.
+> - 반드시 `.gitignore` 파일에 `.env`가 포함되어 있는지 확인하세요.
 
 ---
 
+### ✨ 주요 기능
+- **스마트 PDF 뷰어**: 70% 최적 줌 비율 기본 제공.
+- **멀티모달 AI 분석**: **Gemini 3.0 Flash**로 이미지와 텍스트를 동시에 분석.
+- **간결한 요약**: 핵심 내용 중심의 불렛 포인트 요약.
+- **메모 및 링크 관리**: PDF 페이지 위에 직접 메모를 작성하고 링크를 저장.
+- **개인정보 보호**: 모든 데이터는 브라우저 로컬 저장소에 저장됩니다.
+
+---
+
+## 🚀 How to Run | 실행 방법
+
+1.  **Frontend**: Open `index.html` with a local server (e.g., Live Server).
+2.  **Backend**: 
+    - Go to `backend/` folder.
+    - Setup python venv: `python -m venv venv`.
+    - Install dependencies: `pip install -r requirements.txt`.
+    - Run: `python main.py` (Runs on `http://localhost:8000`).
+
 ## 🛠️ Tech Stack
-- **Frontend**: HTML5, Vanilla CSS/JS, PDF.js
-- **Backend**: Python, FastAPI, Gemini API, Ollama
-- **Storage**: LocalStorage
+HTML5, Vanilla CSS/JS, PDF.js, Python, FastAPI, Gemini API, Ollama
 
 ## 🔗 Repository
 [https://github.com/waterfirst/lecture_guide_memo_app](https://github.com/waterfirst/lecture_guide_memo_app)
