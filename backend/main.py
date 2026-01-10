@@ -2,8 +2,16 @@ import os
 import io
 import base64
 import traceback
+import warnings
+from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Suppress FutureWarning for google.generativeai deprecation
+warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
+
 import google.generativeai as genai
 import pdfplumber
 from dotenv import load_dotenv
@@ -11,6 +19,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
+
+# Get the parent directory where index.html, css/, js/ are located
+FRONTEND_DIR = Path(__file__).parent.parent
+
+# Mount static files for CSS and JS
+app.mount("/css", StaticFiles(directory=FRONTEND_DIR / "css"), name="css")
+app.mount("/js", StaticFiles(directory=FRONTEND_DIR / "js"), name="js")
 
 # Enable CORS for local development
 app.add_middleware(
@@ -29,6 +44,19 @@ else:
     print("Warning: GOOGLE_API_KEY not found in environment variables.")
 
 import ollama
+
+@app.get("/")
+async def root():
+    """Serve the main index.html page"""
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+@app.get("/favicon.ico")
+async def favicon():
+    """Handle favicon requests (return 204 No Content if no favicon exists)"""
+    favicon_path = FRONTEND_DIR / "favicon.ico"
+    if favicon_path.exists():
+        return FileResponse(favicon_path)
+    return {"status": "no favicon"}
 
 @app.post("/translate-pdf")
 async def translate_pdf_fallback():

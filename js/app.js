@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const pdfViewer = new PDFViewer('pdf-canvas');
+    let currentPdfId = null;
 
     // UI Elements
     const uploadBtn = document.getElementById('upload-btn');
@@ -9,19 +10,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const zoomInBtn = document.getElementById('zoom-in');
     const zoomOutBtn = document.getElementById('zoom-out');
     const tabBtns = document.querySelectorAll('.tab-btn');
+    const saveBtn = document.getElementById('save-btn');
 
     // File Upload
     uploadBtn.addEventListener('click', () => pdfUpload.click());
     pdfUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file && file.type === 'application/pdf') {
-            pdfViewer.pdfFile = file; // Store for ID
+            // PDF ID로 파일명 사용
+            currentPdfId = file.name;
+            pdfViewer.pdfFile = file;
+
+            // StorageManager에 현재 PDF ID 저장
+            window.StorageManager.setCurrentPdfId(currentPdfId);
+            window.StorageManager.initPdfData(currentPdfId);
+
+            // 해당 PDF의 저장된 메모/링크 불러오기
+            window.noteManager.loadNotes(currentPdfId);
+            window.linkManager.loadLinks(currentPdfId);
+
+            // PDF 로드
             pdfViewer.loadPDF(file);
+
+            // 현재 PDF 표시
+            updateCurrentPdfDisplay();
 
             // Initial script load for page 1
             setTimeout(() => updateScriptForCurrentPage(), 500);
         }
     });
+
+    // 저장하기 버튼 이벤트
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            if (!currentPdfId) {
+                alert('저장할 PDF가 없습니다. 먼저 PDF를 업로드해주세요.');
+                return;
+            }
+
+            // 현재 메모와 링크를 저장
+            const notes = window.noteManager.getNoteData();
+            const links = window.linkManager.getLinkData();
+            window.StorageManager.saveAll(currentPdfId, notes, links);
+
+            alert('저장되었습니다!');
+        });
+    }
+
+    // 현재 PDF 표시 업데이트
+    function updateCurrentPdfDisplay() {
+        const pdfNameDisplay = document.getElementById('current-pdf-name');
+        if (pdfNameDisplay && currentPdfId) {
+            pdfNameDisplay.textContent = currentPdfId;
+            pdfNameDisplay.title = currentPdfId;
+        }
+    }
 
     // Listen for page changes to update script view
     window.addEventListener('pageRendered', (e) => {
@@ -54,13 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app = {
         viewer: pdfViewer,
         notes: window.noteManager,
-        links: window.linkManager
+        links: window.linkManager,
+        getCurrentPdfId: () => currentPdfId
     };
 
-    // Load persisted data
-    const data = window.StorageManager.getData();
-    window.noteManager.loadNotes(data.notes);
-    window.linkManager.loadLinks(data.links);
+    // 앱 시작 시 이전 PDF의 데이터를 자동으로 불러오지 않음
+    // PDF를 업로드할 때만 해당 PDF의 데이터를 불러옴
 
     // Tabs
     tabBtns.forEach(btn => {

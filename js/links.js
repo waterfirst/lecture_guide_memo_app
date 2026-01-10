@@ -4,6 +4,7 @@ class LinkManager {
         this.addBtn = document.getElementById('add-link-btn');
         this.listContainer = document.getElementById('links-list');
         this.currentPage = 1;
+        this.currentPdfId = null; // 현재 PDF 식별자
 
         if (this.addBtn) {
             this.addBtn.addEventListener('click', () => this.promptAddLink());
@@ -15,7 +16,17 @@ class LinkManager {
         });
     }
 
+    // 현재 PDF ID 설정
+    setCurrentPdfId(pdfId) {
+        this.currentPdfId = pdfId;
+    }
+
     promptAddLink() {
+        if (!this.currentPdfId) {
+            alert('PDF 파일을 먼저 업로드해주세요.');
+            return;
+        }
+
         const url = prompt('첨부할 URL을 입력하세요:');
         if (!url) return;
 
@@ -67,16 +78,32 @@ class LinkManager {
     }
 
     saveLinks() {
-        if (window.StorageManager) {
-            const data = window.StorageManager.getData();
-            data.links = this.links;
-            window.StorageManager.saveData(data);
+        // PDF별로 저장
+        if (window.StorageManager && this.currentPdfId) {
+            window.StorageManager.saveLinksForPdf(this.currentPdfId, this.links);
         }
     }
 
-    loadLinks(data) {
-        this.links = data || [];
+    loadLinks(pdfId) {
+        this.currentPdfId = pdfId;
+        if (window.StorageManager && pdfId) {
+            this.links = window.StorageManager.getLinksForPdf(pdfId) || [];
+        } else {
+            this.links = [];
+        }
         this.renderLinks();
+    }
+
+    // 링크 데이터 리셋 (새 PDF 로드 시)
+    reset() {
+        this.links = [];
+        this.currentPdfId = null;
+        this.renderLinks();
+    }
+
+    // 현재 링크 데이터 반환 (저장하기 버튼용)
+    getLinkData() {
+        return this.links;
     }
 }
 

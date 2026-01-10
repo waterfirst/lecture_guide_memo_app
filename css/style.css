@@ -103,6 +103,28 @@ body {
     border: none;
 }
 
+.btn.success {
+    background: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn.success:hover {
+    background: #218838;
+}
+
+.pdf-name-display {
+    font-size: 0.85rem;
+    color: #666;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px 10px;
+    background: #f0f2f5;
+    border-radius: 4px;
+}
+
 /* Main Content */
 .app-content {
     display: flex;

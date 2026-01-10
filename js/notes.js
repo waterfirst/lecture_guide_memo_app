@@ -85,6 +85,7 @@ class NoteManager {
         this.noteData = []; // Array of { id, pageNum, ... }
         this.container = document.getElementById('notes-overlay');
         this.currentPage = 1;
+        this.currentPdfId = null; // 현재 PDF 식별자
 
         window.addEventListener('pageRendered', (e) => {
             this.currentPage = e.detail.pageNum;
@@ -112,7 +113,17 @@ class NoteManager {
         }
     }
 
+    // 현재 PDF ID 설정
+    setCurrentPdfId(pdfId) {
+        this.currentPdfId = pdfId;
+    }
+
     addNote(x, y) {
+        if (!this.currentPdfId) {
+            alert('PDF 파일을 먼저 업로드해주세요.');
+            return;
+        }
+
         const id = 'note_' + Date.now();
         const data = {
             id: id,
@@ -164,15 +175,32 @@ class NoteManager {
     }
 
     saveNotes() {
-        // storage.js logic
-        if (window.StorageManager) {
-            window.StorageManager.saveNotes(this.noteData);
+        // PDF별로 저장
+        if (window.StorageManager && this.currentPdfId) {
+            window.StorageManager.saveNotesForPdf(this.currentPdfId, this.noteData);
         }
     }
 
-    loadNotes(data) {
-        this.noteData = data || [];
+    loadNotes(pdfId) {
+        this.currentPdfId = pdfId;
+        if (window.StorageManager && pdfId) {
+            this.noteData = window.StorageManager.getNotesForPdf(pdfId) || [];
+        } else {
+            this.noteData = [];
+        }
         this.renderNotesForPage(this.currentPage);
+    }
+
+    // 메모 데이터 리셋 (새 PDF 로드 시)
+    reset() {
+        this.noteData = [];
+        this.currentPdfId = null;
+        this.renderNotesForPage(this.currentPage);
+    }
+
+    // 현재 메모 데이터 반환 (저장하기 버튼용)
+    getNoteData() {
+        return this.noteData;
     }
 }
 
