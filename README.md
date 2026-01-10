@@ -80,6 +80,7 @@ GOOGLE_API_KEY=발급받은_API_키_입력
 
 ## 🚀 How to Run | 실행 방법
 
+0.  **.env** 파일 만들기 : GOOGLE_API_KEY="your_actual_api_key_here"
 1.  **Frontend**: Open `index.html` with a local server (e.g., Live Server).
 2.  **Backend**:
     - Go to `backend/` folder. - `cd backend`
