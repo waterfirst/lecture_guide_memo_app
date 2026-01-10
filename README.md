@@ -82,12 +82,11 @@ GOOGLE_API_KEY=발급받은_API_키_입력
 
 1.  **Frontend**: Open `index.html` with a local server (e.g., Live Server).
 2.  **Backend**:
-    - `cd backend`
-    - Go to `backend/` folder.
+    - Go to `backend/` folder. - `cd backend`
     - Setup python venv: `python -m venv venv`.
     - actiate venv : `venv/Scripts/activate`,
     - Install dependencies: `pip install -r requirements.txt`.
-    - Run: `python main.py` (Runs on `http://localhost:8000`).
+    - Run: `python main.py` (Runs on `index.html` : liveserver).
 
 ## 🛠️ Tech Stack
 HTML5, Vanilla CSS/JS, PDF.js, Python, FastAPI, Gemini API, Ollama
