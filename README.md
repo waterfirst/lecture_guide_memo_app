@@ -81,11 +81,11 @@ GOOGLE_API_KEY=발급받은_API_키_입력
 ## 🚀 How to Run | 실행 방법
 
 1.  **Frontend**: Open `index.html` with a local server (e.g., Live Server).
-2.  **Backend**: 
+2.  **Backend**:
+    - `cd backend`
     - Go to `backend/` folder.
     - Setup python venv: `python -m venv venv`.
     - actiate venv : `venv/Scripts/activate`,
-    - `cd backend`
     - Install dependencies: `pip install -r requirements.txt`.
     - Run: `python main.py` (Runs on `http://localhost:8000`).
 
