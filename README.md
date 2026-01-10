@@ -1,5 +1,7 @@
 # Lecture PDF Study App | 강의 PDF 학습 가이더 (Guider)
 
+🌐 **Live Demo**: [https://lecture-guide-memo-app.onrender.com](https://lecture-guide-memo-app.onrender.com)
+
 [English](#english) | [한국어](#한국어)
 
 ---
@@ -88,6 +90,72 @@ GOOGLE_API_KEY=발급받은_API_키_입력
     - actiate venv : `venv/Scripts/activate`,
     - Install dependencies: `pip install -r requirements.txt`.
     - Run: `python main.py` (Runs on `index.html` : liveserver).
+
+---
+
+## ☁️ Cloud Deployment (Render.com) | 클라우드 배포
+
+### English
+
+You can deploy this app for free on [Render.com](https://render.com):
+
+1. **Create a Render account** and connect your GitHub repository.
+2. **Create a New Web Service** with the following settings:
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `lecture_guide_memo_app` |
+| **Language** | Python 3 |
+| **Branch** | `main` |
+| **Region** | Singapore (Southeast Asia) or your preferred region |
+| **Root Directory** | `backend` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| **Instance Type** | Free ($0/month) |
+
+3. **Add Environment Variable**: 
+   - After creating the service, go to the **Environment** tab in the left sidebar.
+   - Click **"+ Add"** → **"Add from .env"**.
+   - Paste your `.env` file contents (e.g., `GOOGLE_API_KEY="your_actual_api_key_here"`).
+   - Click **"Add variables"** to save.
+   - Alternatively, click **"+ Add"** → **"Add Environment Variable"** and manually enter:
+     - **Key**: `GOOGLE_API_KEY`
+     - **Value**: `your_actual_api_key`
+
+4. Click **"Deploy latest commit"** or wait for automatic deployment.
+
+---
+
+### 한국어
+
+[Render.com](https://render.com)을 통해 무료로 앱을 배포할 수 있습니다:
+
+1. **Render 계정 생성** 후 GitHub 저장소를 연결합니다.
+2. **New Web Service**를 생성하고 다음과 같이 설정합니다:
+
+| 설정 | 값 |
+|------|-----|
+| **Name** | `lecture_guide_memo_app` |
+| **Language** | Python 3 |
+| **Branch** | `main` |
+| **Region** | Singapore (Southeast Asia) 또는 원하는 지역 |
+| **Root Directory** | `backend` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| **Instance Type** | Free ($0/month) |
+
+3. **환경 변수 추가**: 
+   - 서비스 생성 후, 왼쪽 사이드바에서 **Environment** 탭을 클릭합니다.
+   - **"+ Add"** → **"Add from .env"**를 클릭합니다.
+   - `.env` 파일 내용을 붙여넣습니다 (예: `GOOGLE_API_KEY="발급받은_API_키"`).
+   - **"Add variables"**를 클릭하여 저장합니다.
+   - 또는 **"+ Add"** → **"Add Environment Variable"**을 클릭하여 수동으로 입력:
+     - **Key**: `GOOGLE_API_KEY`
+     - **Value**: `발급받은_API_키`
+
+4. **"Deploy latest commit"**을 클릭하거나 자동 배포를 기다립니다.
+
+---
 
 ## 🛠️ Tech Stack
 HTML5, Vanilla CSS/JS, PDF.js, Python, FastAPI, Gemini API, Ollama
