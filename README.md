@@ -84,7 +84,8 @@ GOOGLE_API_KEY=발급받은_API_키_입력
 2.  **Backend**: 
     - Go to `backend/` folder.
     - Setup python venv: `python -m venv venv`.
-    - actiate venv : `venv/Scripts/activate`, 
+    - actiate venv : `venv/Scripts/activate`,
+    - `cd backend`
     - Install dependencies: `pip install -r requirements.txt`.
     - Run: `python main.py` (Runs on `http://localhost:8000`).
 
