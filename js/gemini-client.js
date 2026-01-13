@@ -12,7 +12,8 @@ class GeminiClient {
     async validateApiKey(apiKey) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            // 모델 이름을 backend와 일치하게 수정: gemini-3-flash-preview
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
             // Try to generate a simple test to validate the key
             const result = await model.generateContent("Test");
@@ -35,7 +36,8 @@ class GeminiClient {
     async generateScript(apiKey, text, imageData) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            // 모델 이름을 backend와 일치하게 수정: gemini-3-flash-preview
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
             let prompt = "다음 슬라이드 이미지를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 서술은 제외하고 가독성 좋게 불렛 포인트 마크다운 형식으로 작성해줘.";
 
@@ -47,13 +49,11 @@ class GeminiClient {
 
             if (imageData) {
                 // If we have image data, use multimodal generation
-                // Remove data URL prefix if present
                 let base64Data = imageData;
                 if (imageData.includes(',')) {
                     base64Data = imageData.split(',')[1];
                 }
 
-                // Convert base64 to inline data format
                 const imagePart = {
                     inlineData: {
                         data: base64Data,
