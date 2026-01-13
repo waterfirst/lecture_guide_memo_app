@@ -91,11 +91,27 @@ async def translate_pdf_fallback():
 @app.post("/translate-page")
 async def translate_page(data: dict):
     text = data.get("text", "")
-    image_data = data.get("image") # Base64 encoded image
-    user_api_key = data.get("api_key") # User-provided API key
+    image_data = data.get("image")
+    
+    # .env에서 로드된 서버의 API 키 사용
+    server_api_key = os.getenv("GOOGLE_API_KEY")
+    
+    try:
+        if image_data and server_api_key:
+            genai.configure(api_key=server_api_key)
+            if "," in image_data:
+                image_data = image_data.split(",")[1]
+            image_bytes = base64.b64decode(image_data)
 
-    if not text and not image_data:
-        raise HTTPException(status_code=400, detail="No text or image provided")
+            # 모델명을 gemini-1.5-flash-latest로 설정 (가장 안정적)
+            model = genai.GenerativeModel('gemini-1.5-flash-latest')
+
+            prompt = "다음 슬라이드를 한글로 요약해줘. 불렛 포인트 마크다운 형식을 사용해."
+            response = model.generate_content([
+                prompt,
+                {"mime_type": "image/png", "data": image_bytes}
+            ])
+            return {"script": response.text}
 
     print(f"Received translation request. Text length: {len(text)}, Image present: {bool(image_data)}, API key present: {bool(user_api_key)}")
 
