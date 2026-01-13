@@ -54,15 +54,11 @@ class APIKeyManager {
         btn.textContent = '검증 중...';
 
         try {
-            const response = await fetch(`${this.backendUrl}/validate-api-key`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ api_key: key })
-            });
+            // Wait for geminiClient to be available
+            await this.waitForGeminiClient();
 
-            const data = await response.json();
+            // Use client-side Gemini API validation
+            const data = await window.geminiClient.validateApiKey(key);
 
             if (data.valid) {
                 // Valid key
@@ -103,6 +99,16 @@ class APIKeyManager {
         } finally {
             btn.disabled = false;
             btn.textContent = '검증';
+        }
+    }
+
+    async waitForGeminiClient(timeout = 5000) {
+        const startTime = Date.now();
+        while (!window.geminiClient) {
+            if (Date.now() - startTime > timeout) {
+                throw new Error('Gemini client failed to load');
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
 
