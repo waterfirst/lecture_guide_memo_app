@@ -19,6 +19,18 @@
         <!-- Header -->
         <header class="app-header">
             <h1>📚 Lecture PDF Study</h1>
+            <div class="api-key-section">
+                <div class="api-key-input-group">
+                    <input type="password" id="api-key-input" placeholder="Gemini API 키를 입력하세요" class="api-key-input">
+                    <button id="validate-api-key-btn" class="btn secondary">검증</button>
+                    <div id="api-key-indicator" class="api-key-indicator" title="API 키 상태">
+                        <div class="indicator-light"></div>
+                    </div>
+                </div>
+                <small class="api-key-help">
+                    API 키는 <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>에서 발급받을 수 있습니다.
+                </small>
+            </div>
             <div class="controls">
                 <input type="file" id="pdf-upload" accept=".pdf" hidden>
                 <button id="upload-btn" class="btn primary">파일 업로드</button>
@@ -81,6 +93,7 @@
 
     <!-- Scripts -->
     <script src="js/storage.js"></script>
+    <script src="js/api-key-manager.js"></script>
     <script src="js/pdf-viewer.js"></script>
     <script src="js/translator.js"></script>
     <script src="js/notes.js"></script>

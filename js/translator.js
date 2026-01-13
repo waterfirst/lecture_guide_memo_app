@@ -15,6 +15,10 @@ const Translator = {
             return;
         }
 
+        // Check if API key is available and valid for image processing
+        const apiKey = window.apiKeyManager ? window.apiKeyManager.getApiKey() : null;
+        const isApiKeyValid = window.apiKeyManager ? window.apiKeyManager.isApiKeyValid() : false;
+
         const pageNum = viewer.currentPage;
         const pdfId = viewer.pdfFile ? viewer.pdfFile.name : 'current_pdf';
 
@@ -31,14 +35,27 @@ const Translator = {
                 throw new Error('이 페이지에서 텍스트 또는 이미지를 추출할 수 없습니다.');
             }
 
-            const response = await fetch('http://localhost:8000/translate-page', {
+            // Check if we need API key for image processing
+            if (imageData && !isApiKeyValid) {
+                alert('이미지 분석을 위해 유효한 Gemini API 키가 필요합니다. 상단에서 API 키를 입력하고 검증해주세요.');
+                this.setLoading(false);
+                return;
+            }
+
+            // Determine backend URL based on environment
+            const backendUrl = window.location.origin.includes('localhost')
+                ? 'http://localhost:8000'
+                : window.location.origin;
+
+            const response = await fetch(`${backendUrl}/translate-page`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     text: text,
-                    image: imageData
+                    image: imageData,
+                    api_key: apiKey // Include API key in request
                 })
             });
 

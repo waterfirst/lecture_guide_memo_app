@@ -58,6 +58,30 @@ async def favicon():
         return FileResponse(favicon_path)
     return {"status": "no favicon"}
 
+@app.post("/validate-api-key")
+async def validate_api_key(data: dict):
+    """Validate a Gemini API key by attempting to list models"""
+    api_key = data.get("api_key")
+
+    if not api_key:
+        raise HTTPException(status_code=400, detail="No API key provided")
+
+    try:
+        # Configure genai with the provided API key
+        genai.configure(api_key=api_key)
+
+        # Try to list models to validate the key
+        models = list(genai.list_models())
+
+        if models:
+            return {"valid": True, "message": "API key is valid"}
+        else:
+            return {"valid": False, "message": "No models available"}
+
+    except Exception as e:
+        print(f"API key validation failed: {str(e)}")
+        return {"valid": False, "message": f"Invalid API key: {str(e)}"}
+
 @app.post("/translate-pdf")
 async def translate_pdf_fallback():
     # This is a fallback for cached frontends.
@@ -68,51 +92,56 @@ async def translate_pdf_fallback():
 async def translate_page(data: dict):
     text = data.get("text", "")
     image_data = data.get("image") # Base64 encoded image
-    
+    user_api_key = data.get("api_key") # User-provided API key
+
     if not text and not image_data:
         raise HTTPException(status_code=400, detail="No text or image provided")
-    
-    print(f"Received translation request. Text length: {len(text)}, Image present: {bool(image_data)}")
-    
+
+    print(f"Received translation request. Text length: {len(text)}, Image present: {bool(image_data)}, API key present: {bool(user_api_key)}")
+
     try:
-        # If we have an image and Gemini is configured, use Gemini
-        if image_data and api_key:
-            print("Using Gemini for multimodal translation")
+        # If we have an image and user provided API key, use Gemini
+        if image_data and user_api_key:
+            print("Using Gemini for multimodal translation with user-provided API key")
+
+            # Configure genai with user's API key
+            genai.configure(api_key=user_api_key)
+
             # Remove header if present (e.g., "data:image/png;base64,")
             if "," in image_data:
                 image_data = image_data.split(",")[1]
-            
+
             # Decode base64 to bytes
             image_bytes = base64.b64decode(image_data)
-            
+
             # Using gemini-3-flash-preview as requested (Gemini 3.0 Flash)
             model = genai.GenerativeModel('gemini-3-flash-preview')
-            
+
             prompt = "다음 슬라이드 이미지를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 서술은 제외하고 가독성 좋게 불렛 포인트 마크다운 형식으로 작성해줘."
             if text:
                 prompt += f"\n\n참고 텍스트: {text}"
-            
+
             response = model.generate_content([
                 prompt,
                 {"mime_type": "image/png", "data": image_bytes}
             ])
-            
+
             return {"script": response.text}
 
         # Fallback to Ollama for text-only processing
         if text:
-            model_name = "gemma3:4b" 
+            model_name = "gemma3:4b"
             print(f"Calling Ollama with model: {model_name}")
-            
+
             prompt = f"다음 영어 강의 텍스트를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 내용은 빼고 가독성 좋은 마크다운 불렛 포인트로 작성해줘:\n\n{text}"
-            
+
             response = ollama.generate(model=model_name, prompt=prompt)
             print("Ollama response received successfully")
-            
+
             return {"script": response['response']}
-        
-        raise HTTPException(status_code=400, detail="Gemini API key not configured and no extractable text found.")
-    
+
+        raise HTTPException(status_code=400, detail="Gemini API key not provided and no extractable text found.")
+
     except Exception as e:
         print(f"Exception occurred during translation: {str(e)}")
         traceback.print_exc()
