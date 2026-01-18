@@ -88,20 +88,58 @@ async def translate_pdf_fallback():
     # Tell the user to refresh their browser.
     raise HTTPException(status_code=400, detail="Outdated client version. Please refresh your browser (Ctrl+F5).")
 
+@app.post("/verify-api-key")
+async def verify_api_key(data: dict):
+    key = data.get("api_key")
+    if not key:
+        raise HTTPException(status_code=400, detail="API key is required")
+    
+    try:
+        genai.configure(api_key=key)
+        print("--- Available Gemini Models ---")
+        available_models = []
+        for m in genai.list_models():
+            print(f"Name: {m.name}, Methods: {m.supported_generation_methods}")
+            available_models.append(m.name)
+        
+        # Just check if we can at least list models
+        return {"status": "success", "message": "API key is valid", "models": available_models}
+    except Exception as e:
+        print(f"API Key verification failed: {str(e)}")
+        raise HTTPException(status_code=401, detail=f"Invalid API key: {str(e)}")
+
 @app.post("/translate-page")
 async def translate_page(data: dict):
     text = data.get("text", "")
+<<<<<<< HEAD
     image_data = data.get("image")
+=======
+    image_data = data.get("image") # Base64 encoded image
+    request_api_key = data.get("api_key") # Key from request body
+    
+    # Use key from request if provided, otherwise fallback to env
+    current_api_key = request_api_key or api_key
+>>>>>>> 10afcff (feat: add Gemini API key verification and dynamic model selection)
     
     # .env에서 로드된 서버의 API 키 사용
     server_api_key = os.getenv("GOOGLE_API_KEY")
     
     try:
+<<<<<<< HEAD
         if image_data and server_api_key:
             genai.configure(api_key=server_api_key)
+=======
+        # If we have an image and a valid API key, use Gemini
+        if image_data and current_api_key:
+            print("Using Gemini for multimodal translation")
+            genai.configure(api_key=current_api_key)
+            
+            # Remove header if present (e.g., "data:image/png;base64,")
+>>>>>>> 10afcff (feat: add Gemini API key verification and dynamic model selection)
             if "," in image_data:
                 image_data = image_data.split(",")[1]
             image_bytes = base64.b64decode(image_data)
+<<<<<<< HEAD
 
             # 모델명을 gemini-1.5-flash-latest로 설정 (가장 안정적)
             model = genai.GenerativeModel('gemini-1.5-flash-latest')
@@ -143,6 +181,45 @@ async def translate_page(data: dict):
             ])
 
             return {"script": response.text}
+=======
+            
+            def get_vision_model_name():
+                available = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                # Filter for models that likely support images (vision/multimodal)
+                vision_models = [name for name in available if 'flash' in name.lower() or 'pro' in name.lower()]
+                if vision_models:
+                    print(f"Dynamically selected vision model: {vision_models[0]}")
+                    return vision_models[0]
+                return 'gemini-1.5-flash' # Absolute fallback
+
+            # Try primary choice
+            try:
+                model_name = 'gemini-1.5-flash'
+                model = genai.GenerativeModel(model_name)
+                prompt = "다음 슬라이드 이미지를 핵심 요약 위주로 매우 간결하게 한글로 설명해줘. 불필요한 서술은 제외하고 가독성 좋게 불렛 포인트 마크다운 형식으로 작성해줘."
+                if text:
+                    prompt += f"\n\n참고 텍스트: {text}"
+                
+                response = model.generate_content([
+                    prompt,
+                    {"mime_type": "image/png", "data": image_bytes}
+                ])
+                return {"script": response.text}
+            except Exception as e:
+                print(f"Attempt with gemini-1.5-flash failed: {str(e)}")
+                if "404" in str(e) or "not found" in str(e).lower():
+                    # Dynamic fallback
+                    model_name = get_vision_model_name()
+                    print(f"Retrying with dynamic model: {model_name}")
+                    model = genai.GenerativeModel(model_name)
+                    response = model.generate_content([
+                        prompt,
+                        {"mime_type": "image/png", "data": image_bytes}
+                    ])
+                    return {"script": response.text}
+                raise e
+
+>>>>>>> 10afcff (feat: add Gemini API key verification and dynamic model selection)
 
         # Fallback to Ollama for text-only processing
         if text:

@@ -1,4 +1,3 @@
-// js/translator.js 수정본
 const Translator = {
     generateBtn: document.getElementById('generate-script'),
     scriptBody: document.getElementById('script-body'),
@@ -29,14 +28,18 @@ const Translator = {
                 throw new Error('이 페이지에서 텍스트 또는 이미지를 추출할 수 없습니다.');
             }
 
-            // [변경] 브라우저 SDK 대신 백엔드 API 호출
-            const response = await fetch('/translate-page', {
+            const apiKey = window.StorageManager.getApiKey();
+
+            // Use relative path for production (Render) and absolute for local dev if needed
+            // But usually the proxy or proper routing handles this. 
+            // Sticking to absolute for local dev as requested in previous steps.
+            const response = await fetch('http://localhost:8000/translate-page', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     text: text,
-                    image: imageData
-                    // API 키는 백엔드의 .env를 사용하므로 여기서 보내지 않음
+                    image: imageData,
+                    api_key: apiKey
                 })
             });
 
@@ -84,3 +87,4 @@ const Translator = {
 };
 
 Translator.init();
+window.Translator = Translator;

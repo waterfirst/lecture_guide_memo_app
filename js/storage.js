@@ -95,13 +95,20 @@ const StorageManager = {
 
     // PDF별 스크립트 조회
     getScript: function (pdfId, pageNum) {
+<<<<<<< HEAD
         const pdfData = this.getPdfData(pdfId);
         if (pdfData.scripts && pdfData.scripts[pageNum]) {
             return pdfData.scripts[pageNum];
+=======
+        const data = this.getData();
+        if (data.scripts[pdfId]) {
+            return data.scripts[pdfId][pageNum] || null;
+>>>>>>> 10afcff (feat: add Gemini API key verification and dynamic model selection)
         }
         return null;
     },
 
+<<<<<<< HEAD
     // 모든 PDF 저장 (명시적 저장 버튼용)
     saveAll: function (pdfId, notes, links) {
         if (!pdfId) return;
@@ -112,6 +119,14 @@ const StorageManager = {
         data.pdfs[pdfId].notes = notes;
         data.pdfs[pdfId].links = links;
         this.saveData(data);
+=======
+    saveApiKey: function (key) {
+        localStorage.setItem('google_api_key', key);
+    },
+
+    getApiKey: function () {
+        return localStorage.getItem('google_api_key');
+>>>>>>> 10afcff (feat: add Gemini API key verification and dynamic model selection)
     }
 };
 

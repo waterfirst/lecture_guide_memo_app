@@ -107,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tabs
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            if (btn.classList.contains('locked')) {
+                showApiKeyModal();
+                return;
+            }
             const tabId = btn.getAttribute('data-tab');
 
             // Toggle buttons
@@ -120,4 +124,64 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(`${tabId}-tab`).classList.add('active');
         });
     });
+
+    // API Key Logic
+    const apiKeyModal = document.getElementById('api-key-modal');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const saveApiKeyBtn = document.getElementById('save-api-key');
+    const scriptTabBtn = document.querySelector('.tab-btn[data-tab="script"]');
+
+    function checkApiKey() {
+        const apiKey = window.StorageManager.getApiKey();
+        if (!apiKey) {
+            scriptTabBtn.classList.add('locked');
+            // Show modal immediately on check if key is missing
+            showApiKeyModal();
+        } else {
+            scriptTabBtn.classList.remove('locked');
+        }
+    }
+
+    function showApiKeyModal() {
+        apiKeyModal.classList.add('active');
+    }
+
+    saveApiKeyBtn.addEventListener('click', async () => {
+        const key = apiKeyInput.value.trim();
+        if (!key) {
+            alert('API Key를 입력해주세요.');
+            return;
+        }
+
+        saveApiKeyBtn.disabled = true;
+        saveApiKeyBtn.textContent = '검증 중...';
+
+        try {
+            const response = await fetch('http://localhost:8000/verify-api-key', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_key: key })
+            });
+
+            if (response.ok) {
+                window.StorageManager.saveApiKey(key);
+                alert('API Key가 성공적으로 검증되었습니다!');
+                apiKeyModal.classList.remove('active');
+                checkApiKey();
+                // Click the script tab to show it
+                scriptTabBtn.click();
+            } else {
+                const error = await response.json();
+                throw new Error(error.detail || '검증 실패');
+            }
+        } catch (error) {
+            alert('API Key 검증 오류: ' + error.message);
+        } finally {
+            saveApiKeyBtn.disabled = false;
+            saveApiKeyBtn.textContent = '저장 및 검증';
+        }
+    });
+
+    // Initial check
+    checkApiKey();
 });
