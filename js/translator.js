@@ -15,6 +15,15 @@ const Translator = {
             return;
         }
 
+        // Check if API key is available and valid
+        const apiKey = window.apiKeyManager ? window.apiKeyManager.getApiKey() : null;
+        const isApiKeyValid = window.apiKeyManager ? window.apiKeyManager.isApiKeyValid() : false;
+
+        if (!isApiKeyValid || !apiKey) {
+            alert('유효한 Gemini API 키가 필요합니다. 상단에서 API 키를 입력하고 검증해주세요.');
+            return;
+        }
+
         const pageNum = viewer.currentPage;
         const pdfId = viewer.pdfFile ? viewer.pdfFile.name : 'current_pdf';
 
@@ -28,27 +37,13 @@ const Translator = {
                 throw new Error('이 페이지에서 텍스트 또는 이미지를 추출할 수 없습니다.');
             }
 
-            const apiKey = window.StorageManager.getApiKey();
-
-            // Use relative path for production (Render) and absolute for local dev if needed
-            // But usually the proxy or proper routing handles this. 
-            // Sticking to absolute for local dev as requested in previous steps.
-            const response = await fetch('http://localhost:8000/translate-page', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: text,
-                    image: imageData,
-                    api_key: apiKey
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || '백엔드 요청 실패');
+            // Wait for geminiClient to be available
+            if (!window.geminiClient) {
+                throw new Error('Gemini client is not loaded yet. Please refresh the page.');
             }
 
-            const data = await response.json();
+            // Use client-side Gemini API
+            const data = await window.geminiClient.generateScript(apiKey, text, imageData);
             this.displayScript(data.script);
 
             if (window.StorageManager) {
@@ -56,7 +51,7 @@ const Translator = {
             }
         } catch (error) {
             console.error('Translation error:', error);
-            alert(error.message);
+            alert(error.message || '스크립트 생성 중 오류가 발생했습니다.');
         } finally {
             this.setLoading(false);
         }
