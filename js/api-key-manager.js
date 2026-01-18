@@ -132,4 +132,4 @@ class APIKeyManager {
 }
 
 // Create global instance
-const apiKeyManager = new APIKeyManager();
+window.apiKeyManager = new APIKeyManager();
